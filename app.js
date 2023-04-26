@@ -3,6 +3,7 @@ const app = express();
 
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -17,9 +18,7 @@ const postRoutes = require('./routes/post');
 const userRoutes = require('./routes/user');
 
 //Middleware
-app.use('/post',postRoutes);
-app.use('/user',userRoutes);
-
+app.use('/posts',postRoutes);
 
 //Routes 
 app.get('/',(req,res) => {
@@ -28,7 +27,14 @@ app.get('/',(req,res) => {
 
 
 //Connect to DB
-mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true});
+mongoose.connect(process.env.MONGO_URI, 
+    {useNewUrlParser: true})
+    .then(() => {
+        console.log("Connected to MongoDB");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
 //start Listening to the server
 app.listen(port,()=>{
