@@ -18,6 +18,7 @@ router.get('/', async(req, res) => {
         res.json(arr);
         // console.log(posts.length);
     }catch(err){
+        console.log(err);
         res.json({message: err});
     }
     // res.send('We are @t post router');
@@ -30,17 +31,18 @@ router.get('/blog',(req,res) => {
 
 // Submit A post
 router.post('/', async (req, res) => {
-    const post = new Post({
-        title: req.body.title,
-        description: req.body.description
-    });
-
-    const savePost = await post.save();
+ 
     // console.log({savePost});
     try{
-        res.json({your_id_is: savePost._id});
+        const post = new Post({
+            title: req.body.title,
+            description: req.body.description
+        });
+        const savePost = await post.save();
+
+        res.json({id: savePost._id});
     }catch(err){
-        res.json({message: err});
+        res.json({message: err.message});
     }
 
     // console.log(req.body);
@@ -48,19 +50,25 @@ router.post('/', async (req, res) => {
 
 
 //Get A Specific Post
-router.get('/:postID', async(req, res) => {
+router.get('/:postId', async(req, res) => {
     try{
-        const post =  await Post.findById(req.params.postID);
+        const post =  await Post.findById(req.params.postId);
         // const id = post._id;
         res.json({
             id: post._id,
             title: post.title
         });
     }catch(err){
-        res.json({message: err});
+        // console.log("hello");
+        let regex = /^[0-9a-fA-F]{24}$/;
+        if(regex.test(req.params.postId)) {
+            res.json({message: err.message});
+        }else{
+            res.json({message: "Invalid ID"});
+        }
     }
 
-    console.log(req.params.postID);
+    // console.log(req.params.postId);
 });
 
 
